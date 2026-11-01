@@ -154,12 +154,16 @@
       playText.textContent = "Смотреть: " + (item.title || "ролик");
       play.appendChild(playText);
 
+      var frameBox = document.createElement("div");
+      frameBox.className = "video__frame";
+      frameBox.appendChild(poster);
+      frameBox.appendChild(play);
+
       var caption = document.createElement("p");
       caption.className = "video__caption";
       caption.textContent = item.title || "";
 
-      card.appendChild(poster);
-      card.appendChild(play);
+      card.appendChild(frameBox);
       card.appendChild(caption);
       track.appendChild(card);
     });
@@ -212,7 +216,8 @@
       frame.title = button.textContent.trim() || "Ролик Ярослава";
       frame.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
       frame.allowFullscreen = true;
-      box.replaceChildren(frame);
+      var stage = button.closest(".video__frame") || box;
+      stage.replaceChildren(frame);
     }
 
     track.addEventListener("click", function (event) {
@@ -397,6 +402,15 @@
 
     if (!accepted) cookie.hidden = false;
 
+    function syncCookieSpace() {
+      var height = cookie.hidden ? 0 : cookie.offsetHeight;
+      document.documentElement.style.setProperty("--cookie-space", height + "px");
+    }
+
+    syncCookieSpace();
+    window.addEventListener("resize", syncCookieSpace);
+    if (window.ResizeObserver) new ResizeObserver(syncCookieSpace).observe(cookie);
+
     var accept = cookie.querySelector("[data-cookie-ok]");
     if (accept) {
       accept.addEventListener("click", function () {
@@ -406,6 +420,7 @@
           accepted = true;
         }
         cookie.hidden = true;
+        syncCookieSpace();
       });
     }
   }
