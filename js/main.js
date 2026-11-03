@@ -91,18 +91,29 @@
     setLink("[data-tiktok-slot]", config.tiktokUrl, "TikTok");
   }
 
-  var phoneSlot = document.querySelector("[data-phone-value]");
-  var phoneRow = document.querySelector("[data-phone-row]");
-  if (phoneSlot && config.phoneDisplay) {
-    if (config.phoneHref) {
-      var phoneLink = document.createElement("a");
-      phoneLink.href = config.phoneHref;
-      phoneLink.textContent = config.phoneDisplay;
-      phoneSlot.replaceChildren(phoneLink);
-    } else {
-      phoneSlot.textContent = config.phoneDisplay;
-    }
-    if (phoneRow) phoneRow.hidden = false;
+  function setHref(selector, url) {
+    if (!url) return;
+    document.querySelectorAll(selector).forEach(function (node) {
+      node.href = url;
+    });
+  }
+
+  setHref("[data-telegram]", config.telegramUrl);
+  setHref("[data-whatsapp]", config.whatsappUrl);
+
+  if (config.phoneDisplay) {
+    document.querySelectorAll("[data-phone-value]").forEach(function (phoneSlot) {
+      if (config.phoneHref) {
+        var phoneLink = document.createElement("a");
+        phoneLink.href = config.phoneHref;
+        phoneLink.textContent = config.phoneDisplay;
+        phoneSlot.replaceChildren(phoneLink);
+      } else {
+        phoneSlot.textContent = config.phoneDisplay;
+      }
+      var phoneRow = phoneSlot.closest("[data-phone-row]");
+      if (phoneRow) phoneRow.hidden = false;
+    });
   }
 
   var messengerSlot = document.querySelector("[data-messenger-value]");
@@ -293,6 +304,16 @@
     return field ? String(field.value || "").trim() : "";
   }
 
+  function checkedValues(form, name) {
+    return Array.prototype.filter
+      .call(form.querySelectorAll('input[name="' + name + '"]'), function (input) {
+        return input.checked;
+      })
+      .map(function (input) {
+        return input.value;
+      });
+  }
+
   function setStatus(form, state, message) {
     var status = form.querySelector("[data-status]");
     if (!status) return;
@@ -343,6 +364,7 @@
         phone: fieldValue(form, "phone"),
         budget: fieldValue(form, "budget"),
         kind: fieldValue(form, "kind"),
+        contact: checkedValues(form, "contact").join(", "),
         comment: fieldValue(form, "comment"),
         source: form.getAttribute("data-source") || "site",
         page: window.location.href,
@@ -351,6 +373,11 @@
 
       if (!payload.name || !payload.phone) {
         setStatus(form, "error", "Укажите имя и телефон.");
+        return;
+      }
+
+      if (!payload.contact) {
+        setStatus(form, "error", "Выберите, как с вами связаться.");
         return;
       }
 

@@ -199,6 +199,10 @@ h2 {
   min-height: var(--header);
 }
 
+.header__inner > * {
+  flex-shrink: 0;
+}
+
 .logo {
   display: inline-flex;
   align-items: center;
@@ -239,11 +243,67 @@ h2 {
   font-size: 15px;
   font-weight: 500;
   text-decoration: none;
+  white-space: nowrap;
+}
+
+.nav a[hidden] {
+  display: none !important;
 }
 
 .nav a:hover {
   text-decoration: underline;
   text-underline-offset: 4px;
+}
+
+.nav__phone {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+  color: var(--color-meta);
+}
+
+.nav__phone svg {
+  width: 18px;
+  height: 18px;
+  flex: none;
+}
+
+.header.is-hero .nav__phone {
+  color: var(--color-gray);
+}
+
+.header__apps {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: none;
+}
+
+.header__app {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  color: inherit;
+  text-decoration: none;
+}
+
+.header__app svg {
+  width: 20px;
+  height: 20px;
+}
+
+.header__app:hover {
+  color: var(--color-accent);
+  border-color: var(--color-accent);
 }
 
 .nav-toggle {
@@ -587,6 +647,11 @@ h2 {
   font-weight: 600;
 }
 
+.field .field__hint {
+  font-weight: 500;
+  color: var(--color-meta);
+}
+
 .field input,
 .field select,
 .field textarea {
@@ -607,6 +672,14 @@ h2 {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 8px;
+}
+
+.choice--way {
+  grid-template-columns: 1fr;
+}
+
+.hero__sheet .choice--way {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .choice__item {
@@ -680,12 +753,17 @@ h2 {
 }
 
 .hero__sheet .form__thanks {
+  position: relative;
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(220px, 42%);
   align-items: stretch;
   gap: 0;
+  min-height: 280px;
   padding: 0;
   overflow: hidden;
+  box-shadow: none;
+  border-left: 8px solid var(--color-accent);
+  border-right: 8px solid var(--color-accent);
 }
 
 .form__thanks-copy {
@@ -697,10 +775,18 @@ h2 {
   padding: 40px 36px 40px 40px;
 }
 
+.form__thanks-photo-wrap {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
 .form__thanks-photo {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
-  min-height: 280px;
   object-fit: cover;
   object-position: center 18%;
 }
@@ -1094,6 +1180,10 @@ h2 {
   display: block;
   color: var(--color-meta);
   font-size: 13px;
+}
+
+.contacts__line [data-phone-value] {
+  font-weight: 600;
 }
 
 .socials__list {
@@ -1720,13 +1810,38 @@ body:has(.cookie:not([hidden])) .promo-pin {
   }
 }
 
+@media (max-width: 1100px) {
+  .header__inner {
+    gap: 16px;
+  }
+
+  .nav {
+    gap: 16px;
+  }
+}
+
 @media (max-width: 980px) {
   .nav-toggle {
     display: inline-flex;
   }
 
-  .header__cta {
+  .header__apps {
     margin-left: auto;
+  }
+
+  .header__cta {
+    margin-left: 0;
+  }
+
+  .nav__phone {
+    order: -1;
+    min-height: 44px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--color-line);
+  }
+
+  .header.is-hero .nav__phone {
+    border-bottom-color: #3a3c3e;
   }
 
   .header__cta .button__full {
@@ -1882,18 +1997,18 @@ body:has(.cookie:not([hidden])) .promo-pin {
 
   .hero__sheet .form__thanks {
     grid-template-columns: 1fr;
+    grid-template-rows: 300px minmax(0, 1fr);
     padding: 0;
+  }
+
+  .form__thanks-photo-wrap {
+    order: 0;
+    height: 300px;
   }
 
   .hero__sheet .form__thanks-copy {
     order: 1;
     padding: 24px 22px 28px;
-  }
-
-  .form__thanks-photo {
-    order: 0;
-    height: 220px;
-    min-height: 0;
   }
 
   .cookie {
@@ -1914,6 +2029,10 @@ body:has(.cookie:not([hidden])) .promo-pin {
 
   .header__inner {
     gap: 12px;
+  }
+
+  .hero__sheet .choice--way {
+    grid-template-columns: 1fr;
   }
 
   .portrait img {
@@ -1982,6 +2101,41 @@ body:has(.cookie:not([hidden])) .promo-pin {
 
   body:has(.cookie:not([hidden])) .promo-pin {
     bottom: calc(var(--cookie-space, 240px) + 12px);
+  }
+}
+
+@media (max-width: 370px) {
+  .header__inner {
+    gap: 6px;
+  }
+
+  .logo__img {
+    height: 24px;
+  }
+
+  .header__apps {
+    gap: 4px;
+  }
+
+  .header__app {
+    width: 34px;
+    height: 34px;
+  }
+
+  .header__app svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .header__cta {
+    min-height: 40px;
+    padding-inline: 10px;
+    font-size: 14px;
+  }
+
+  .nav-toggle {
+    width: 40px;
+    height: 40px;
   }
 }
 
