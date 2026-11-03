@@ -346,6 +346,22 @@
   }
 
   document.querySelectorAll("[data-lead-form]").forEach(function (form) {
+    function syncKindLabel() {
+      var kind = fieldValue(form, "kind");
+      if (!kind) return;
+      var label = kind === "Мотоцикл" ? "Рассчитать мотоцикл" : "Рассчитать автомобиль";
+      var title = form.querySelector(".form__body h2");
+      var submit = form.querySelector("[type='submit']");
+      if (title) title.textContent = label;
+      if (submit) submit.textContent = label;
+      form.setAttribute("aria-label", label);
+    }
+
+    form.addEventListener("change", function (event) {
+      if (event.target && event.target.name === "kind") syncKindLabel();
+    });
+    syncKindLabel();
+
     var again = form.querySelector("[data-form-again]");
     if (again) {
       again.addEventListener("click", function () {

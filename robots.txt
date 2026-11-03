@@ -1,8 +1,8 @@
-# Сайт: https://autogo.by/
+# Сайт: https://motogomotors.by/
 User-agent: *
 Allow: /
 
 # Рабочие заметки не индексировать, если на сервер попадёт папка docs.
 Disallow: /docs/
 
-Sitemap: https://autogo.by/sitemap.xml
+Sitemap: https://motogomotors.by/sitemap.xml
