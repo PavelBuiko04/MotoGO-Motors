@@ -2,7 +2,4 @@
 User-agent: *
 Allow: /
 
-# Рабочие заметки не индексировать, если на сервер попадёт папка docs.
-Disallow: /docs/
-
 Sitemap: https://motogomotors.by/sitemap.xml

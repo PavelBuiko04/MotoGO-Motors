@@ -1539,7 +1539,8 @@ body:has(.cookie:not([hidden])) {
 }
 
 .promo__actions a:not(.button) {
-  color: var(--color-ink);
+  color: var(--color-meta);
+  font-size: 14px;
   font-weight: 600;
   text-underline-offset: 3px;
 }
@@ -1742,7 +1743,44 @@ body:has(.cookie:not([hidden])) .promo-pin {
   bottom: calc(var(--cookie-space, 108px) + 12px);
 }
 
-@media (max-width: 720px) {
+@media (min-width: 641px) and (max-width: 800px) {
+  .promo {
+    align-items: stretch;
+    padding-top: 16px;
+    padding-bottom: 16px;
+  }
+
+  .promo__sheet {
+    height: auto;
+    max-height: calc(100vh - 32px);
+    max-height: calc(100dvh - 32px);
+    min-height: calc(100dvh - 32px);
+  }
+
+  .promo__tree {
+    display: none;
+  }
+
+  .promo__sheet h2 {
+    max-width: none;
+    padding-right: 76px;
+  }
+
+  .promo__brand {
+    white-space: nowrap;
+  }
+
+  .promo__copy {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .promo__actions {
+    margin-top: auto;
+  }
+}
+
+@media (max-width: 640px) {
   .promo__sheet {
     display: flex;
     flex-direction: column;
@@ -1754,7 +1792,7 @@ body:has(.cookie:not([hidden])) .promo-pin {
 
   .promo__photo {
     flex: none;
-    height: 128px;
+    height: 220px;
     min-height: 0;
   }
 
@@ -1778,9 +1816,14 @@ body:has(.cookie:not([hidden])) .promo-pin {
   }
 
   .promo__sheet h2 {
-    max-width: 16ch;
+    max-width: none;
     margin-bottom: 10px;
-    padding-right: 72px;
+    padding-right: 0;
+    font-size: clamp(24px, 7.2vw, 32px);
+  }
+
+  .promo__brand {
+    white-space: nowrap;
   }
 
   .promo__sheet p {
