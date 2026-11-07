@@ -45,7 +45,7 @@
     />
 
     <link rel="stylesheet" href="css/tokens.css" />
-    <link rel="stylesheet" href="css/styles.css?v=63" />
+    <link rel="stylesheet" href="css/styles.css?v=67" />
 
     <script type="application/ld+json">
       {
@@ -136,7 +136,17 @@
             <p class="lead">Поможем найти твою машину в Америке.</p>
 
             <div class="reel" data-reel>
+              <button class="reel__arrow reel__arrow--prev" type="button" data-reel-prev aria-label="Предыдущий ролик">
+                <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M14 6 8 12l6 6" />
+                </svg>
+              </button>
               <div class="reel__track" data-reel-track tabindex="0" aria-label="Ролики Ярослава"></div>
+              <button class="reel__arrow reel__arrow--next" type="button" data-reel-next aria-label="Следующий ролик">
+                <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="m10 6 6 6-6 6" />
+                </svg>
+              </button>
             </div>
 
             <div class="hero__bottom">
@@ -566,7 +576,7 @@
             <a href="cookies/">Политика cookie</a>
             <a href="privacy/">Политика конфиденциальности</a>
             <a href="consent/">Согласие на обработку</a>
-            <a href="promo/">Условия акции</a>
+            <a href="promo/" hidden>Условия акции</a>
           </p>
         </div>
         <p class="footer__entity">ИП Денисенко Ярослав Викторович<br />УНП 591705197</p>
@@ -662,6 +672,6 @@
     </button>
 
     <script src="js/config.js?v=8"></script>
-    <script src="js/main.js?v=20"></script>
+    <script src="js/main.js?v=23"></script>
   </body>
 </html>

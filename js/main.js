@@ -194,6 +194,44 @@
       return card.getBoundingClientRect().width + gap;
     }
 
+    var prevButton = reel.querySelector("[data-reel-prev]");
+    var nextButton = reel.querySelector("[data-reel-next]");
+
+    function updateArrows() {
+      if (!prevButton && !nextButton) return;
+      var max = track.scrollWidth - track.clientWidth;
+      var atStart = track.scrollLeft <= 4;
+      var atEnd = track.scrollLeft >= max - 4;
+      if (prevButton) prevButton.disabled = atStart;
+      if (nextButton) nextButton.disabled = atEnd;
+    }
+
+    function stepReel(direction) {
+      track.scrollBy({
+        left: direction * cardStep(),
+        behavior: reduceMotion ? "auto" : "smooth"
+      });
+    }
+
+    if (videos.length < 2) {
+      if (prevButton) prevButton.hidden = true;
+      if (nextButton) nextButton.hidden = true;
+    } else {
+      if (prevButton) {
+        prevButton.addEventListener("click", function () {
+          stepReel(-1);
+        });
+      }
+      if (nextButton) {
+        nextButton.addEventListener("click", function () {
+          stepReel(1);
+        });
+      }
+      track.addEventListener("scroll", updateArrows, { passive: true });
+      window.addEventListener("resize", updateArrows);
+      updateArrows();
+    }
+
     function advance() {
       var max = track.scrollWidth - track.clientWidth - 8;
       var next = track.scrollLeft + cardStep();
@@ -246,6 +284,9 @@
       track.classList.add("is-dragging");
       paused = true;
       arm();
+      if (track.setPointerCapture) {
+        try { track.setPointerCapture(event.pointerId); } catch (error) {}
+      }
     });
 
     track.addEventListener("pointermove", function (event) {
@@ -256,7 +297,11 @@
     });
 
     function endDrag(event) {
-      if (!drag || (event && drag.id !== event.pointerId)) return;
+      if (!drag) return;
+      if (event && event.pointerId != null && drag.id !== event.pointerId) return;
+      if (track.hasPointerCapture && event && event.pointerId != null && track.hasPointerCapture(event.pointerId)) {
+        try { track.releasePointerCapture(event.pointerId); } catch (error) {}
+      }
       suppressClick = drag.moved;
       drag = null;
       track.classList.remove("is-dragging");
@@ -266,6 +311,16 @@
 
     track.addEventListener("pointerup", endDrag);
     track.addEventListener("pointercancel", endDrag);
+    track.addEventListener("lostpointercapture", endDrag);
+    window.addEventListener("pointerup", endDrag);
+    window.addEventListener("pointercancel", endDrag);
+    window.addEventListener("blur", function () { endDrag(); });
+
+    track.addEventListener("wheel", function (event) {
+      if (Math.abs(event.deltaY) <= Math.abs(event.deltaX)) return;
+      event.preventDefault();
+      scrollPageBy(wheelDelta(event));
+    }, { passive: false });
 
     track.addEventListener("mouseenter", function () {
       paused = true;
@@ -468,6 +523,28 @@
     }
   }
 
+  function wheelDelta(event) {
+    if (event.deltaMode === 1) return event.deltaY * 16;
+    if (event.deltaMode === 2) return event.deltaY * window.innerHeight;
+    return event.deltaY;
+  }
+
+  function scrollPageBy(amount) {
+    if (!amount) return;
+    var root = document.scrollingElement || document.documentElement;
+    var previous = root.style.scrollBehavior;
+    root.style.scrollBehavior = "auto";
+    root.scrollTop += amount;
+    root.style.scrollBehavior = previous;
+  }
+
+  function scrollingBox(target) {
+    var node = target && target.closest ? target.closest(".promo__copy, .reel__track") : null;
+    if (!node || node.scrollHeight <= node.clientHeight + 2) return null;
+    return node;
+  }
+
+  var promoLive = false;
   var promo = document.querySelector("[data-promo]");
   if (promo) {
     var sheet = promo.querySelector(".promo__sheet");
@@ -475,22 +552,50 @@
 
     function closePromo(focusPin) {
       promo.hidden = true;
-      if (pin) pin.hidden = false;
-      if (focusPin && pin) pin.focus();
+      if (pin) pin.hidden = !promoLive;
+      if (focusPin && pin && promoLive) pin.focus();
     }
 
     function openPromo() {
-      if (!promo.hidden) return;
+      if (!promoLive || !promo.hidden) return;
       promo.hidden = false;
       if (pin) pin.hidden = true;
       if (sheet) sheet.focus();
     }
 
-    openPromo();
+    if (promoLive) openPromo();
+    else if (pin) pin.hidden = true;
 
     promo.addEventListener("click", function (event) {
       if (event.target === promo || event.target.closest("[data-promo-close]")) closePromo(true);
     });
+
+    promo.addEventListener("wheel", function (event) {
+      if (promo.hidden || scrollingBox(event.target)) return;
+      if (Math.abs(event.deltaY) < Math.abs(event.deltaX)) return;
+      event.preventDefault();
+      scrollPageBy(wheelDelta(event));
+    }, { passive: false });
+
+    var promoTouchY = null;
+    promo.addEventListener("touchstart", function (event) {
+      if (promo.hidden || !event.touches.length || scrollingBox(event.target)) {
+        promoTouchY = null;
+        return;
+      }
+      promoTouchY = event.touches[0].clientY;
+    }, { passive: true });
+    promo.addEventListener("touchmove", function (event) {
+      if (promo.hidden || promoTouchY == null || !event.touches.length) return;
+      var y = event.touches[0].clientY;
+      var delta = promoTouchY - y;
+      promoTouchY = y;
+      if (!delta) return;
+      event.preventDefault();
+      scrollPageBy(delta);
+    }, { passive: false });
+    promo.addEventListener("touchend", function () { promoTouchY = null; });
+    promo.addEventListener("touchcancel", function () { promoTouchY = null; });
 
     if (pin) pin.addEventListener("click", openPromo);
 
